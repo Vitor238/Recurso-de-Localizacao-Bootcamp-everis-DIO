@@ -46,10 +46,10 @@ class MapsActivity : AppCompatActivity(),
     override fun onMapReady(googleMap: GoogleMap) {
         map = googleMap
 
-        // Add a marker in Sydney and move the camera
-        val sydney = LatLng(-34.0, 151.0)
-        map.addMarker(MarkerOptions().position(sydney).title("Marker in Sydney"))
-        map.moveCamera(CameraUpdateFactory.newLatLng(sydney))
+
+        val myPlace = LatLng(40.73, -73.99)
+        map.addMarker(MarkerOptions().position(myPlace).title("Minha cidade favorita"))
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(myPlace, 12.0f))
 
         map.uiSettings.isZoomControlsEnabled = true
         map.setOnMarkerClickListener(this)
