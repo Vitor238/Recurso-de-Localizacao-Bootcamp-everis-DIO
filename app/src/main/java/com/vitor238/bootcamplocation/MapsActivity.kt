@@ -2,7 +2,8 @@ package com.vitor238.bootcamplocation
 
 import android.Manifest
 import android.content.pm.PackageManager
-import android.graphics.BitmapFactory
+import android.location.Address
+import android.location.Geocoder
 import android.location.Location
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
@@ -13,11 +14,11 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.vitor238.bootcamplocation.databinding.ActivityMapsBinding
+import java.util.*
 
 class MapsActivity : AppCompatActivity(),
     OnMapReadyCallback,
@@ -75,6 +76,8 @@ class MapsActivity : AppCompatActivity(),
 
         map.isMyLocationEnabled = true
 
+        map.mapType = GoogleMap.MAP_TYPE_HYBRID
+
         fusedLocationClient.lastLocation.addOnSuccessListener(this) { location ->
             if (location != null) {
                 lastLocation = location
@@ -87,12 +90,30 @@ class MapsActivity : AppCompatActivity(),
 
     private fun placeMarkerOnMap(location: LatLng) {
         val markerOptions = MarkerOptions().position(location)
-        markerOptions.icon(
+
+/*        markerOptions.icon(
             BitmapDescriptorFactory.fromBitmap(
                 BitmapFactory.decodeResource(resources, R.mipmap.ic_user_location)
             )
-        )
+        )*/
+        val titleStr = getAddress(location)
+        markerOptions.title(titleStr)
+
         map.addMarker(markerOptions)
+    }
+
+    private fun getAddress(latLong: LatLng): String {
+
+        val geocoder = Geocoder(this, Locale.getDefault())
+        val addresses: List<Address> =
+            geocoder.getFromLocation(latLong.latitude, latLong.longitude, 1)
+
+        val address = addresses[0].getAddressLine(0)
+        val city = addresses[0].locality
+        val state = addresses[0].adminArea
+        val country = addresses[0].countryName
+        val postalCode = addresses[0].postalCode
+        return address
     }
 
     override fun onMarkerClick(marker: Marker) = false
